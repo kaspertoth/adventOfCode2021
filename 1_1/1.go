@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	f, _ := os.Open("input")
+	f, _ := os.Open("input.txt")
 	scanner := bufio.NewScanner(f)
 	lastValue := 0
 	totalIncrements := 0
