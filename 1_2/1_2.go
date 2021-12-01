@@ -11,6 +11,7 @@ const slideCount = 3
 
 func main() {
 	f, _ := os.Open("input.txt")
+	defer f.Close()
 	var slides [slideCount]int
 	currentTotal := 0
 	scanner := bufio.NewScanner(f)
@@ -19,7 +20,6 @@ func main() {
 	index := 0
 	for scanner.Scan() {
 		currentValue, _ := strconv.Atoi(scanner.Text())
-
 		for i := 0; i < slideCount; i++ {
 			slides[i] = slides[i] + currentValue
 			if index%slideCount == i {
@@ -27,10 +27,8 @@ func main() {
 				slides[i] = 0
 			}
 		}
-		if index >= slideCount {
-			if currentTotal > lastTotal {
-				totalIncrements++
-			}
+		if index >= slideCount && currentTotal > lastTotal {
+			totalIncrements++
 		}
 		lastTotal = currentTotal
 		index++
