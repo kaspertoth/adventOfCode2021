@@ -8,13 +8,17 @@ import (
 
 const bitSize = 12
 
-func readFile() [][bitSize]int {
-	var result [][bitSize]int
+type bitLine [bitSize]int
+
+func readFile() []bitLine {
+	var result []bitLine
 	f, _ := os.Open("input.txt")
-	defer f.Close()
+	defer func(f *os.File) {
+		_ = f.Close()
+	}(f)
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
-		var value [bitSize]int
+		var value bitLine
 		for i, c := range scanner.Text() {
 			if c == '1' {
 				value[i] = 1
@@ -25,8 +29,8 @@ func readFile() [][bitSize]int {
 	return result
 }
 
-func getMostCommon(values [][bitSize]int) [bitSize]int {
-	var result [bitSize]int
+func getMostCommon(values []bitLine) bitLine {
+	var result bitLine
 	for _, row := range values {
 		for bitPosition, val := range row {
 			result[bitPosition] += val
@@ -40,11 +44,11 @@ func getMostCommon(values [][bitSize]int) [bitSize]int {
 	return result
 }
 
-func getMeasurement(values [][bitSize]int, lookingFor bool) int {
+func getMeasurement(values []bitLine, lookingFor bool) int {
 	var result int
 	for i := 0; i < bitSize; i++ {
 		mostCommon := getMostCommon(values)
-		var newValues [][bitSize]int
+		var newValues []bitLine
 		for _, row := range values {
 			if (row[i] == mostCommon[i]) == lookingFor {
 				newValues = append(newValues, row)
