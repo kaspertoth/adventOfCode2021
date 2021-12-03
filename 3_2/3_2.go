@@ -4,11 +4,14 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"sync"
 )
 
 const bitSize = 12
 
 type bitLine [bitSize]int
+
+var wg sync.WaitGroup
 
 func readFile() []bitLine {
 	var result []bitLine
@@ -44,8 +47,8 @@ func getMostCommon(values []bitLine) bitLine {
 	return result
 }
 
-func getMeasurement(values []bitLine, lookingFor bool) int {
-	var result int
+func getMeasurement(values []bitLine, lookingFor bool, result *int) {
+	defer wg.Done()
 	for i := 0; i < bitSize; i++ {
 		mostCommon := getMostCommon(values)
 		var newValues []bitLine
@@ -56,18 +59,21 @@ func getMeasurement(values []bitLine, lookingFor bool) int {
 		}
 		if len(newValues) == 1 {
 			for _, bit := range newValues[0] {
-				result = result<<1 + bit
+				*result = (*result)<<1 + bit
 			}
 			break
 		}
 		values = newValues
 	}
-	return result
 }
 
 func main() {
 	values := readFile()
-	oxygenValue := getMeasurement(values, true)
-	co2Value := getMeasurement(values, false)
+	wg.Add(2)
+	var oxygenValue int
+	var co2Value int
+	go getMeasurement(values, true, &oxygenValue)
+	go getMeasurement(values, false, &co2Value)
+	wg.Wait()
 	fmt.Printf("Result: %d\n", oxygenValue*co2Value)
 }
