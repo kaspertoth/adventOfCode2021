@@ -108,7 +108,7 @@ func (g *grid) iterate() bool {
 func main() {
 	var g grid
 	g.processFile()
-	for i := 0; i < 1000; i++ {
+	for i := 0; true; i++ {
 		if i == 100 {
 			fmt.Printf("Answer 1: %d\n", totalFlashes)
 		}
